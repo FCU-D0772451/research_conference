@@ -4,40 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Research Data Display</title>
-    <!-- 引入Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .json-container {
             white-space: pre-wrap; /* 保持JSON格式化輸出 */
-            font-family: monospace; /* 使用等寬字體JSON */
+            font-family: monospace; /* 使用等寬字體顯示JSON */
             background-color: #f8f9fa;
             padding: 10px;
             border-radius: 5px;
-            overflow-x: auto; /* 水平滾動 */
+            overflow-x: auto; /* 添加水平滾動條以便顯示長內容 */
+        
         }
     </style>
 </head>
 <body>
     <div class="container mt-4">
         <h1>Research Data Display</h1>
-        <input type="text" id="keyword" placeholder="Enter keyword" class="form-control" />
-        <button onclick="fetchData()" class="btn btn-primary mt-2">Search</button>
+        
+        <!-- 下拉選單選擇論文類型 -->
+        <select id="paperType" class="form-select mb-3">
+            <option value="conference">會議論文</option>
+            <option value="journal">期刊論文</option>
+        </select>
 
+        <!-- 關鍵字輸入框和搜尋按鈕 -->
+        <input type="text" id="keyword" placeholder="輸入關鍵字" class="form-control" />
+        <button onclick="fetchData()" class="btn btn-primary mt-2">搜尋</button>
+
+        <!-- JSON結果顯示容器 -->
         <div id="result" class="json-container mt-4"></div>
     </div>
 
     <script>
         async function fetchData() {
             const keyword = document.getElementById("keyword").value;
+            const paperType = document.getElementById("paperType").value;
+            const apiEndpoint = paperType === "conference" ? "get_research_data_conference" : "get_research_data_journal";
+
             try {
-                const response = await fetch(`https://dfd8-123-240-245-178.ngrok-free.app/get_research_data?keyword=${encodeURIComponent(keyword)}`);
+                const response = await fetch(`https://ddc8-123-240-245-178.ngrok-free.app/${apiEndpoint}?keyword=${encodeURIComponent(keyword)}`);
                 
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
                 
                 const data = await response.json();
-                // json顯示在前端
                 document.getElementById("result").textContent = JSON.stringify(data, null, 4);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
